@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Animasi Alur Program Stoikiometri</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px;
+      margin: 0;
+    }
+    h2 { color: #38bdf8; margin-bottom: 8px; }
+    p { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 900px;
+    }
+    .step {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 16px 20px;
+      width: 180px;
+      text-align: center;
+      opacity: 0.35;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+    .step.active {
+      opacity: 1;
+      transform: translateY(0);
+      border-color: #38bdf8;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
+      background: #1e3a5f;
+    }
+    .step h4 { margin: 0 0 6px; color: #7dd3fc; font-size: 15px; }
+    .step span { font-size: 12px; color: #cbd5e1; display: block; }
+    .arrow { font-size: 22px; color: #475569; transition: color 0.5s; }
+    .arrow.active { color: #38bdf8; }
+    .controls { margin-top: 28px; display: flex; gap: 10px; }
+    button {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: #0369a1; }
+  </style>
+</head>
+<body>
+
+  <h2>Simulasi Alur Algoritma Stoikiometri</h2>
+  <p>Visualisasi proses pembacaan hingga penyetaraan reaksi kimia</p>
+
+  <div class="container">
+    <div class="step" id="s1">
+      <h4>1. Input Senyawa</h4>
+      <span>Baca teks format:<br><code>2 Fe 2 O 3 > ... F</code></span>
+    </div>
+    <div class="arrow" id="a1">➔</div>
+    <div class="step" id="s2">
+      <h4>2. Parsing Token</h4>
+      <span>Fungsi <code>.strip().split()</code> memisahkan koefisien & unsur</span>
+    </div>
+    <div class="arrow" id="a2">➔</div>
+    <div class="step" id="s3">
+      <h4>3. Agregasi Atom</h4>
+      <span>Hitung total atom ruas kiri (reaktan) & kanan (produk)</span>
+    </div>
+    <div class="arrow" id="a3">➔</div>
+    <div class="step" id="s4">
+      <h4>4. Evaluasi & Output</h4>
+      <span>Cek setimbang / cari koefisien terkecil via loop</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="mulaiAnimasi()">Putar Ulang Animasi</button>
+  </div>
+
+  <script>
+    function mulaiAnimasi() {
+      const steps = ['s1', 's2', 's3', 's4'];
+      const arrows = ['a1', 'a2', 'a3'];
+      steps.forEach(id => document.getElementById(id).classList.remove('active'));
+      arrows.forEach(id => document.getElementById(id).classList.remove('active'));
+
+      steps.forEach((id, index) => {
+        setTimeout(() => {
+          document.getElementById(id).classList.add('active');
+          if (index > 0) document.getElementById(arrows[index - 1]).classList.add('active');
+        }, index * 900);
+      });
+    }
+    window.onload = mulaiAnimasi;
+  </script>
+</body>
+</html>
