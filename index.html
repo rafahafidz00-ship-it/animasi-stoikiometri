@@ -2,109 +2,426 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Animasi Alur Program Stoikiometri</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualisasi Alur Program Stoikiometri</title>
   <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --success: #34d399;
+      --code-bg: #090d16;
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin: 0 0 6px;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 0.9rem;
       margin: 0;
     }
-    h2 { color: #38bdf8; margin-bottom: 8px; }
-    p { color: #94a3b8; font-size: 14px; margin-bottom: 24px; }
-    .container {
+
+    /* Tab Menu Subproblem */
+    .tabs {
       display: flex;
-      align-items: center;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
-      max-width: 900px;
+      margin-bottom: 24px;
     }
-    .step {
-      background: #1e293b;
-      border: 2px solid #334155;
-      border-radius: 12px;
-      padding: 16px 20px;
-      width: 180px;
-      text-align: center;
-      opacity: 0.35;
-      transform: translateY(10px);
-      transition: all 0.5s ease;
-    }
-    .step.active {
-      opacity: 1;
-      transform: translateY(0);
-      border-color: #38bdf8;
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);
-      background: #1e3a5f;
-    }
-    .step h4 { margin: 0 0 6px; color: #7dd3fc; font-size: 15px; }
-    .step span { font-size: 12px; color: #cbd5e1; display: block; }
-    .arrow { font-size: 22px; color: #475569; transition: color 0.5s; }
-    .arrow.active { color: #38bdf8; }
-    .controls { margin-top: 28px; display: flex; gap: 10px; }
-    button {
-      background: #0284c7;
-      color: white;
-      border: none;
-      padding: 10px 18px;
+    .tab-btn {
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.25s;
     }
-    button:hover { background: #0369a1; }
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .tab-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Area Visualisasi */
+    .stage-wrapper {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .sub-desc {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sub-desc h2 {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+      color: #7dd3fc;
+    }
+    .sub-desc span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Grid Alur Langkah */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      align-items: stretch;
+    }
+    .step-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0.28;
+      transform: translateY(12px) scale(0.98);
+      transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+    }
+    .step-card.active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+      background: #172a45;
+    }
+    .step-card.done {
+      opacity: 0.88;
+      transform: translateY(0) scale(1);
+      border-color: #0ea5e9;
+    }
+    .step-badge {
+      display: inline-block;
+      background: #0f172a;
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      width: fit-content;
+      border: 1px solid var(--border);
+    }
+    .step-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      color: #e0f2fe;
+    }
+    .step-detail {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .code-box {
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: var(--success);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Kontrol Animasi */
+    .controls {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .ctrl-btn:hover { background: #0369a1; }
+    .ctrl-btn.secondary {
+      background: #334155;
+    }
+    .ctrl-btn.secondary:hover { background: #475569; }
   </style>
 </head>
 <body>
 
-  <h2>Simulasi Alur Algoritma Stoikiometri</h2>
-  <p>Visualisasi proses pembacaan hingga penyetaraan reaksi kimia</p>
+  <header>
+    <h1>Visualisasi Alur Kerja Program Stoikiometri</h1>
+    <p>Simulasi proses komputasi dari Input hingga Output untuk 4 Subproblem</p>
+  </header>
 
-  <div class="container">
-    <div class="step" id="s1">
-      <h4>1. Input Senyawa</h4>
-      <span>Baca teks format:<br><code>2 Fe 2 O 3 > ... F</code></span>
-    </div>
-    <div class="arrow" id="a1">➔</div>
-    <div class="step" id="s2">
-      <h4>2. Parsing Token</h4>
-      <span>Fungsi <code>.strip().split()</code> memisahkan koefisien & unsur</span>
-    </div>
-    <div class="arrow" id="a2">➔</div>
-    <div class="step" id="s3">
-      <h4>3. Agregasi Atom</h4>
-      <span>Hitung total atom ruas kiri (reaktan) & kanan (produk)</span>
-    </div>
-    <div class="arrow" id="a3">➔</div>
-    <div class="step" id="s4">
-      <h4>4. Evaluasi & Output</h4>
-      <span>Cek setimbang / cari koefisien terkecil via loop</span>
-    </div>
+  <!-- Navigasi 4 Subproblem -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="pilihSubproblem(1)">Subproblem 1: Hitung Atom</button>
+    <button class="tab-btn" onclick="pilihSubproblem(2)">Subproblem 2: Cek Kesetimbangan</button>
+    <button class="tab-btn" onclick="pilihSubproblem(3)">Subproblem 3: Koefisien Produk</button>
+    <button class="tab-btn" onclick="pilihSubproblem(4)">Subproblem 4: Lengkapi Semua</button>
   </div>
 
-  <div class="controls">
-    <button onclick="mulaiAnimasi()">Putar Ulang Animasi</button>
+  <!-- Wadah Simulasi -->
+  <div class="stage-wrapper">
+    <div class="sub-desc">
+      <h2 id="judul-sub">Subproblem 1: Menghitung Jumlah Atom Senyawa</h2>
+      <span id="ket-sub">Membaca 1 baris senyawa kimia lalu menghitung total tiap unsurnya.</span>
+    </div>
+
+    <div class="flow-grid" id="flow-container">
+      <!-- Kartu langkah akan dirender otomatis oleh JavaScript -->
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="putarOtomatis()">▶ Putar Animasi Otomatis</button>
+      <button class="ctrl-btn secondary" onclick="langkahBerikutnya()">⏭ Langkah Berikutnya (Manual)</button>
+    </div>
   </div>
 
   <script>
-    function mulaiAnimasi() {
-      const steps = ['s1', 's2', 's3', 's4'];
-      const arrows = ['a1', 'a2', 'a3'];
-      steps.forEach(id => document.getElementById(id).classList.remove('active'));
-      arrows.forEach(id => document.getElementById(id).classList.remove('active'));
+    const dataSubproblem = {
+      1: {
+        judul: "Subproblem 1: Menghitung Jumlah Atom Senyawa",
+        keterangan: "Alur pembacaan koefisien molekul dan indeks atom dari input tunggal.",
+        langkah: [
+          {
+            badge: "TAHAP 1 • INPUT AWAL",
+            judul: "Terima String Senyawa",
+            detail: "Pengguna memasukkan 1 baris senyawa dengan format spasi.",
+            kode: "Input:\n2 H 2 O 1"
+          },
+          {
+            badge: "TAHAP 2 • PARSING",
+            judul: "Pecah Token (.split)",
+            detail: "String dibersihkan (.strip) & dipecah menjadi list. Indeks [0] diambil sebagai koefisien.",
+            kode: "tokens = ['2', 'H', '2', 'O', '1']\nkoefisien = 2"
+          },
+          {
+            badge: "TAHAP 3 • KALKULASI",
+            judul: "Kalikan Koefisien × Indeks",
+            detail: "Looping membaca pasangan (Unsur, Indeks) dan menyimpannya ke dictionary.",
+            kode: "H: 2 × 2 = 4\nO: 2 × 1 = 2"
+          },
+          {
+            badge: "TAHAP 4 • OUTPUT AKHIR",
+            judul: "Cetak Total Atom",
+            detail: "Program menampilkan jumlah akhir masing-masing unsur penyusun senyawa.",
+            kode: "Output:\nH: 4\nO: 2"
+          }
+        ]
+      },
+      2: {
+        judul: "Subproblem 2: Mengecek Kesetimbangan Reaksi",
+        keterangan: "Membandingkan agregasi total atom ruas kiri (reaktan) dan ruas kanan (produk).",
+        langkah: [
+          {
+            badge: "TAHAP 1 • INPUT REAKSI",
+            judul: "Baca Reaktan & Produk",
+            detail: "Input dibaca per baris. Tanda '>' memisahkan reaktan & produk, 'F' mengakhiri input.",
+            kode: "1 C 1 H 4\n1 O 2\n>\n1 C 1 O 2\n2 H 2 O 1\nF"
+          },
+          {
+            badge: "TAHAP 2 • AGREGASI",
+            judul: "Jumlahkan Atom Kiri & Kanan",
+            detail: "Semua atom di sisi reaktan dijumlahkan, begitu juga di sisi produk.",
+            kode: "Reaktan: {C:1, H:4, O:2}\nProduk : {C:1, H:4, O:4}"
+          },
+          {
+            badge: "TAHAP 3 • KOMPARASI",
+            judul: "Hitung Selisih (Produk - Reaktan)",
+            detail: "Mengecek apakah setiap unsur memiliki selisih 0 atau tidak.",
+            kode: "C: 1 - 1 = 0\nH: 4 - 4 = 0\nO: 4 - 2 = +2 (Tidak Sama)"
+          },
+          {
+            badge: "TAHAP 4 • OUTPUT AKHIR",
+            judul: "Status & Selisih Unsur",
+            detail: "Jika semua 0 cetak 'Reaksi Setimbang'. Jika tidak, cetak selisih unsurnya.",
+            kode: "Output:\nO:+2"
+          }
+        ]
+      },
+      3: {
+        judul: "Subproblem 3: Menghitung Koefisien Produk",
+        keterangan: "Menentukan angka koefisien produk (yang awalnya 0) agar setara dengan reaktan.",
+        langkah: [
+          {
+            badge: "TAHAP 1 • INPUT AWAL",
+            judul: "Input Produk Berkoefisien 0",
+            detail: "Reaktan sudah memiliki koefisien pasti, sedangkan seluruh produk diawali angka 0.",
+            kode: "1 C 3 H 8\n5 O 2\n>\n0 C 1 O 2\n0 H 2 O 1\nF"
+          },
+          {
+            badge: "TAHAP 2 • TARGET ATOM",
+            judul: "Hitung Kebutuhan Atom Reaktan",
+            detail: "Program menghitung total atom yang tersedia di ruas kiri sebagai acuan.",
+            kode: "Target Atom:\nC = 3, H = 8, O = 10"
+          },
+          {
+            badge: "TAHAP 3 • PEMBAGIAN",
+            judul: "Kalkulasi Rasio Koefisien",
+            detail: "Membagi kebutuhan atom reaktan dengan jumlah atom dasar pada tiap molekul produk.",
+            kode: "CO2 -> butuh 3 C / 1 = 3\nH2O -> butuh 8 H / 2 = 4"
+          },
+          {
+            badge: "TAHAP 4 • OUTPUT AKHIR",
+            judul: "Cetak Koefisien Produk",
+            detail: "Menampilkan urutan angka koefisien produk yang membuat reaksi setimbang.",
+            kode: "Output:\n3 4"
+          }
+        ]
+      },
+      4: {
+        judul: "Subproblem 4: Melengkapi Semua Koefisien",
+        keterangan: "Mencari kombinasi koefisien terkecil untuk reaktan maupun produk sekaligus.",
+        langkah: [
+          {
+            badge: "TAHAP 1 • INPUT AWAL",
+            judul: "Semua Senyawa Berkoefisien 0",
+            detail: "Baik reaktan maupun produk belum memiliki koefisien (semuanya bernilai 0).",
+            kode: "0 Fe 1\n0 O 2\n>\n0 Fe 2 O 3"
+          },
+          {
+            badge: "TAHAP 2 • BRUTE-FORCE LOOP",
+            judul: "Uji Kombinasi Angka (1–9)",
+            detail: "Program melakukan iterasi bertingkat untuk menguji kombinasi koefisien (c1, c2, c3...).",
+            kode: "Uji (1,1,1) -> Gagal\nUji (2,1,1) -> Gagal\n...\nUji (4,3,2) -> Evaluasi..."
+          },
+          {
+            badge: "TAHAP 3 • VALIDASI ATOM",
+            judul: "Cek Kesamaan Dictionary Atom",
+            detail: "Memverifikasi apakah total atom reaktan persis sama dengan produk pada kombinasi (4,3,2).",
+            kode: "Kiri : {Fe: 4, O: 6}\nKanan: {Fe: 4, O: 6}\nStatus: COCOK!"
+          },
+          {
+            badge: "TAHAP 4 • OUTPUT AKHIR",
+            judul: "Persamaan Setimbang Terkecil",
+            detail: "Loop dihentikan saat kecocokan pertama ditemukan dan mencetak hasil lengkapnya.",
+            kode: "Output:\n4 Fe 1\n3 O 2\n>\n2 Fe 2 O 3"
+          }
+        ]
+      }
+    };
 
-      steps.forEach((id, index) => {
-        setTimeout(() => {
-          document.getElementById(id).classList.add('active');
-          if (index > 0) document.getElementById(arrows[index - 1]).classList.add('active');
-        }, index * 900);
+    let subAktif = 1;
+    let langkahSekarang = 0;
+    let timerAnimasi = null;
+
+    function pilihSubproblem(nomor) {
+      subAktif = nomor;
+      
+      // Update tombol tab aktif
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === nomor);
       });
+
+      // Update judul & keterangan
+      const data = dataSubproblem[nomor];
+      document.getElementById('judul-sub').innerText = data.judul;
+      document.getElementById('ket-sub').innerText = data.keterangan;
+
+      // Render kartu langkah
+      const container = document.getElementById('flow-container');
+      container.innerHTML = '';
+      data.langkah.forEach((item, index) => {
+        container.innerHTML += `
+          <div class="step-card" id="card-${index}">
+            <div>
+              <span class="step-badge">${item.badge}</span>
+              <h3>${item.judul}</h3>
+              <p class="step-detail">${item.detail}</p>
+            </div>
+            <div class="code-box">${item.kode}</div>
+          </div>
+        `;
+      });
+
+      putarOtomatis();
     }
-    window.onload = mulaiAnimasi;
+
+    function updateTampilanKartu(targetIndex) {
+      const total = dataSubproblem[subAktif].langkah.length;
+      for (let i = 0; i < total; i++) {
+        const card = document.getElementById(`card-${i}`);
+        if (!card) continue;
+        card.classList.remove('active', 'done');
+        if (i < targetIndex) {
+          card.classList.add('done');
+        } else if (i === targetIndex) {
+          card.classList.add('active');
+        }
+      }
+    }
+
+    function putarOtomatis() {
+      clearInterval(timerAnimasi);
+      langkahSekarang = 0;
+      updateTampilanKartu(0);
+
+      const total = dataSubproblem[subAktif].langkah.length;
+      timerAnimasi = setInterval(() => {
+        langkahSekarang++;
+        if (langkahSekarang < total) {
+          updateTampilanKartu(langkahSekarang);
+        } else {
+          clearInterval(timerAnimasi);
+        }
+      }, 1100);
+    }
+
+    function langkahBerikutnya() {
+      clearInterval(timerAnimasi);
+      const total = dataSubproblem[subAktif].langkah.length;
+      langkahSekarang = (langkahSekarang + 1) % total;
+      updateTampilanKartu(langkahSekarang);
+    }
+
+    // Jalankan pertama kali saat halaman dibuka
+    window.onload = () => pilihSubproblem(1);
   </script>
 </body>
 </html>
